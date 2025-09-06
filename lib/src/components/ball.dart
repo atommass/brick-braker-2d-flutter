@@ -44,14 +44,18 @@ class Ball extends CircleComponent
         velocity.y = -velocity.y;
       } else if (intersectionPoints.first.x <= 0) {
         velocity.x = -velocity.x;
-      } else if (intersectionPoints.first.x >= game.width) {
+      } else if (intersectionPoints.first.x >= other.size.x) {
         velocity.x = -velocity.x;
       } else if (intersectionPoints.first.y >= game.height) {
         add(
           RemoveEffect(
             delay: 0.35,
             onComplete: () {
-              game.playState = PlayState.gameOver;
+              if (game.lives.value > 1) {
+                game.playState = PlayState.lifeLost;
+              } else {
+                game.playState = PlayState.gameOver;
+              }
             },
           ),
         );

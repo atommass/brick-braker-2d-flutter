@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+
+//import 'package:flutter_animate/flutter_animate.dart';
 
 class OverlayScreen extends StatelessWidget {
-  const OverlayScreen({super.key, required this.title, required this.subtitle});
+  const OverlayScreen(
+      {super.key, required this.title, required this.subtitle, required this.level});
 
   final String title;
   final String subtitle;
+  final int level;
 
   @override
   Widget build(BuildContext context) {
@@ -15,15 +18,21 @@ class OverlayScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
+            'LEVEL $level',
+            style: Theme.of(context).textTheme.headlineLarge,
+          ),
+          SizedBox(height: 16),
+          Text(
             title,
             style: Theme.of(context).textTheme.headlineLarge,
-          ).animate().slideY(duration: 750.ms, begin: -3, end: 0),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 16),
-          Text(subtitle, style: Theme.of(context).textTheme.headlineSmall)
-              .animate(onPlay: (controller) => controller.repeat())
-              .fadeIn(duration: 1.seconds)
-              .then()
-              .fadeOut(duration: 1.seconds),
+          Text(
+            subtitle,
+            style: Theme.of(context).textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

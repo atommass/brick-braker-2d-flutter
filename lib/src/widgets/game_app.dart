@@ -1,3 +1,4 @@
+//import 'package:brick_braker_2d/src/components/levels.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,6 +16,8 @@ class GameApp extends StatefulWidget {
 
 class _GameAppState extends State<GameApp> {
   late final BrickBreaker game;
+
+  
 
   @override
   void initState() {
@@ -48,7 +51,10 @@ class _GameAppState extends State<GameApp> {
                 child: Column(
                   // Modify from here...
                   children: [
-                    ScoreCard(score: game.score),
+                    ScoreCard(
+                        score: game.score,
+                        level: game.levelCard,
+                        lives: game.lives),
                     Expanded(
                       child: FittedBox(
                         child: SizedBox(
@@ -58,19 +64,28 @@ class _GameAppState extends State<GameApp> {
                             game: game,
                             overlayBuilderMap: {
                               PlayState.welcome.name: (context, game) =>
-                                  const OverlayScreen(
+                                  OverlayScreen(
                                     title: 'TAP TO PLAY',
-                                    subtitle: 'Use arrow keys or swipe',
+                                    subtitle: 'Use arrow keys or swipe', 
+                                    level: (game as BrickBreaker).level,
                                   ),
                               PlayState.gameOver.name: (context, game) =>
-                                  const OverlayScreen(
+                                  OverlayScreen(
                                     title: 'G A M E   O V E R',
                                     subtitle: 'Tap to Play Again',
+                                    level: (game as BrickBreaker).level,
                                   ),
                               PlayState.won.name: (context, game) =>
-                                  const OverlayScreen(
-                                    title: 'Y O U   W O N ! ! !',
-                                    subtitle: 'Tap to Play Again',
+                                  OverlayScreen(
+                                    title: 'Y O U   W O N !',
+                                    subtitle: 'Tap to Play Next Level',
+                                    level: (game as BrickBreaker).level,
+                                  ),
+                              PlayState.lifeLost.name: (context, game) =>
+                                  OverlayScreen(
+                                    title: 'L I F E   L O S T',
+                                    subtitle: 'Tap to Continue',
+                                    level: (game as BrickBreaker).level,
                                   ),
                             },
                           ),

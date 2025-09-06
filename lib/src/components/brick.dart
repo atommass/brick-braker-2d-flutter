@@ -1,3 +1,4 @@
+import 'package:brick_braker_2d/src/components/levels.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +30,13 @@ class Brick extends RectangleComponent
     game.score.value++;
 
     if (game.world.children.query<Brick>().length == 1) {
-      game.playState = PlayState.won;  
-      game.world.removeAll(game.world.children.query<Ball>());
-      game.world.removeAll(game.world.children.query<Bat>());
+      if (game.level >= brickLevels.length) {
+        game.playState = PlayState.won;
+      } else {
+        game.playState = PlayState.won;
+        game.world.removeAll(game.world.children.query<Ball>());
+        game.world.removeAll(game.world.children.query<Bat>());
+      }
     }
   }
 }
