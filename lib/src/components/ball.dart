@@ -33,7 +33,7 @@ class Ball extends CircleComponent
     position += velocity * dt;
   }
 
-  @override // Add from here...
+  @override
   void onCollisionStart(
     Set<Vector2> intersectionPoints,
     PositionComponent other,

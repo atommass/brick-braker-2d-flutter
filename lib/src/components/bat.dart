@@ -12,7 +12,14 @@ class Bat extends PositionComponent
     required this.cornerRadius,
     required super.position,
     required super.size,
-  }) : super(anchor: Anchor.center, children: [RectangleHitbox()]);
+  }) : super(
+         anchor: Anchor.center,
+
+         //children: [RectangleHitbox()],
+       ) {
+    // Visible hitbox matches the bat size
+    add(RectangleHitbox()..collisionType = CollisionType.active);
+  }
 
   final Radius cornerRadius;
 
@@ -44,3 +51,5 @@ class Bat extends PositionComponent
     );
   }
 }
+
+

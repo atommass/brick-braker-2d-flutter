@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:brick_braker_2d/src/components/bat_touch_field.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -60,6 +61,7 @@ class BrickBreaker extends FlameGame
     world.removeAll(world.children.query<Ball>());
     world.removeAll(world.children.query<Bat>());
     world.removeAll(world.children.query<Brick>());
+    world.removeAll(world.children.query<BatTouchField>());
 
     playState = PlayState.playing;
     score.value = 0;
@@ -76,11 +78,22 @@ class BrickBreaker extends FlameGame
       ),
     );
 
+    final bat = Bat(
+      size: Vector2(batWidth, batHeight),
+      cornerRadius: const Radius.circular(ballRadius / 2),
+      position: Vector2(width / 2, height * 0.95),
+    );
+    world.add(bat);
+
+    final touchFieldWidth = width; 
+    final touchFieldHeight = batHeight * 5; 
+    final touchFieldY = bat.position.y; 
+
     world.add(
-      Bat(
-        size: Vector2(batWidth, batHeight),
-        cornerRadius: const Radius.circular(ballRadius / 2),
-        position: Vector2(width / 2, height * 0.95),
+      BatTouchField(
+        bat: bat,
+        size: Vector2(touchFieldWidth, touchFieldHeight),
+        position: Vector2(width / 2, touchFieldY),
       ),
     );
 
