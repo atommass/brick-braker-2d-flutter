@@ -51,10 +51,12 @@ class Ball extends CircleComponent
           RemoveEffect(
             delay: 0.35,
             onComplete: () {
-              if (game.lives.value > 1) {
-                game.playState = PlayState.lifeLost;
-              } else {
-                game.playState = PlayState.gameOver;
+              if (game.playState != PlayState.won) {
+                if (game.lives.value > 1) {
+                  game.playState = PlayState.lifeLost;
+                } else {
+                  game.playState = PlayState.gameOver;
+                }
               }
             },
           ),

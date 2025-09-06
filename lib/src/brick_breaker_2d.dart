@@ -17,12 +17,12 @@ enum PlayState { welcome, playing, gameOver, won, lifeLost }
 class BrickBreaker extends FlameGame
     with HasCollisionDetection, KeyboardEvents, TapDetector {
   BrickBreaker()
-      : super(
-          camera: CameraComponent.withFixedResolution(
-            width: gameWidth,
-            height: gameHeight,
-          ),
-        );
+    : super(
+        camera: CameraComponent.withFixedResolution(
+          width: gameWidth,
+          height: gameHeight,
+        ),
+      );
 
   final ValueNotifier<int> score = ValueNotifier(0);
   final ValueNotifier<int> levelCard = ValueNotifier(1);
@@ -32,7 +32,7 @@ class BrickBreaker extends FlameGame
   double get height => size.y;
 
   late int level;
-  late double difficulty;
+  late int _levelStartScore;
   late PlayState _playState;
   PlayState get playState => _playState;
 
@@ -48,8 +48,8 @@ class BrickBreaker extends FlameGame
       case PlayState.playing:
         overlays.remove(PlayState.welcome.name);
         overlays.remove(PlayState.gameOver.name);
-        overlays.remove(PlayState.won.name);
         overlays.remove(PlayState.lifeLost.name);
+        overlays.remove(PlayState.won.name);
         break;
     }
   }
@@ -62,37 +62,34 @@ class BrickBreaker extends FlameGame
 
     world.add(PlayArea());
 
-    level = 1;
-    difficulty = 1.0;
+    level = 9;
+    _levelStartScore = 0;
+    levelCard.value = level;
     playState = PlayState.welcome;
   }
 
   void startGame() {
     if (playState == PlayState.playing) return;
 
+    final shouldResetLevel = playState != PlayState.lifeLost;
+
     overlays.remove(PlayState.welcome.name);
     overlays.remove(PlayState.gameOver.name);
-    overlays.remove(PlayState.won.name);
     overlays.remove(PlayState.lifeLost.name);
+    overlays.remove(PlayState.won.name);
 
     if (playState == PlayState.lifeLost) {
       lives.value--;
+      score.value = _levelStartScore;
       if (lives.value <= 0) {
         playState = PlayState.gameOver;
         return;
       }
     }
-
-    world.removeAll(world.children.query<Ball>());
-    world.removeAll(world.children.query<Bat>());
-    world.removeAll(world.children.query<Brick>());
-    world.removeAll(world.children.query<BatTouchField>());
-
     if (playState == PlayState.won) {
-      level++;
-      lives.value--;
-      difficulty *= 1.02;
       levelCard.value = level;
+      _levelStartScore = score.value;
+      lives.value = 3;
       if (level > brickLevels.length) {
         playState = PlayState.won;
         return;
@@ -100,11 +97,31 @@ class BrickBreaker extends FlameGame
     }
 
     if (playState == PlayState.gameOver) {
-      level = 1;
-      difficulty = 1.0;
       score.value = 0;
       lives.value = 3;
-      levelCard.value = 1;
+      levelCard.value = level;
+      _levelStartScore = 0;
+    }
+
+    world.removeAll(world.children.query<Ball>());
+    world.removeAll(world.children.query<Bat>());
+    world.removeAll(world.children.query<BatTouchField>());
+
+    if (shouldResetLevel) {
+      world.removeAll(world.children.query<Brick>());
+      final levelLayout = brickLevels[level - 1];
+      world.addAll([
+        for (var i = 0; i < levelLayout.length; i++)
+          for (var j = 0; j < levelLayout[i].length; j++)
+            if (levelLayout[i][j] == 'x')
+              Brick(
+                position: Vector2(
+                  (j + 0.5) * brickWidth + (j + 1) * brickGutter,
+                  (i + 2.0) * brickHeight + i * brickGutter,
+                ),
+                color: brickColors[j % brickColors.length],
+              ),
+      ]);
     }
 
     playState = PlayState.playing;
@@ -112,7 +129,7 @@ class BrickBreaker extends FlameGame
 
     world.add(
       Ball(
-        difficultyModifier: difficulty,
+        difficultyModifier: difficultyModifier,
         radius: ballRadius,
         position: size / 2,
         velocity: Vector2(
@@ -140,21 +157,6 @@ class BrickBreaker extends FlameGame
         position: Vector2(width / 2, touchFieldY),
       ),
     );
-
-    final levelLayout = brickLevels[level - 1];
-
-    world.addAll([
-      for (var i = 0; i < levelLayout.length; i++)
-        for (var j = 0; j < levelLayout[i].length; j++)
-          if (levelLayout[i][j] == 'x')
-            Brick(
-              position: Vector2(
-                (j + 0.5) * brickWidth + (j + 1) * brickGutter,
-                (i + 2.0) * brickHeight + i * brickGutter,
-              ),
-              color: brickColors[j % brickColors.length],
-            ),
-    ]);
   }
 
   @override
